@@ -8,8 +8,6 @@ fun main() {
         val line = it.split("|")
         dictionary += Word(original = line[0], translated = line[1], correctAnswersCount = line[2].toIntOrNull() ?: 0)
     }
-
-    if (!hasUnlearnedWords(dictionary)) return
     do {
         println("Меню: 1 – Учить слова, 2 – Статистика, 0 – Выход")
         when (getAnswerNumber()) {
@@ -18,23 +16,23 @@ fun main() {
                 println("Для выхода из режима  - 0")
                 do {
                     var sizeListToScreen = NUMBER_UNLEARNED_WORDS_SCREEN
-                    val unlearnedList =
+                    var unlearnedList =
                         dictionary
                             .shuffled()
                             .filter { it.correctAnswersCount < NUMBER_CORRECTLY_LEARNED }.toMutableList()
 
                     val sizeUnlearnedList = NUMBER_UNLEARNED_WORDS_SCREEN - unlearnedList.size
                     if (sizeUnlearnedList > 0) {
-                        unlearnedList += if (dictionary.filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }.size >= sizeUnlearnedList) {
-                            dictionary.filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }
-                                .take(sizeUnlearnedList)
+                        val learnedList = dictionary.filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }
+                        unlearnedList += if (learnedList.size >= sizeUnlearnedList) {
+                            learnedList.take(sizeUnlearnedList)
                         } else {
-                            dictionary.filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }
+                            learnedList
                         }
                     }
                     if (unlearnedList.size < NUMBER_UNLEARNED_WORDS_SCREEN) sizeListToScreen = unlearnedList.size
 
-                    unlearnedList.shuffled().take(sizeListToScreen).toMutableList()
+                    unlearnedList = unlearnedList.shuffled().take(sizeListToScreen).toMutableList()
 
                     var indexWordRightAnswer: Int
                     do {
