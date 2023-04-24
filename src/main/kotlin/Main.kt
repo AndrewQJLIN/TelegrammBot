@@ -16,11 +16,14 @@ fun main() {
                 println("Для выхода из режима  - 0")
                 do {
                     var sizeListToScreen = NUMBER_UNLEARNED_WORDS_SCREEN
-                    var unlearnedList =
+                    val unlearnedList =
                         dictionary
                             .shuffled()
                             .filter { it.correctAnswersCount < NUMBER_CORRECTLY_LEARNED }.toMutableList()
-
+// переменная unlearnedList содержит список невыученных слов, т.е. тех которые удовлетворяют условию и если число таких слов
+// будет меньше чем число вариантов которые надо вывести на экран, то в этот список надо добавить выученные слова  - так написано в задании
+// на YOUTUBE это дальше и проверяется
+// и к списку unlearnedList надо будет добавить новый список из выученных слов - вот поэтому он МУТАБЕЛЬНЫЙ
                     val sizeUnlearnedList = NUMBER_UNLEARNED_WORDS_SCREEN - unlearnedList.size
                     if (sizeUnlearnedList > 0) {
                         val learnedList = dictionary.filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }
@@ -32,28 +35,31 @@ fun main() {
                     }
                     if (unlearnedList.size < NUMBER_UNLEARNED_WORDS_SCREEN) sizeListToScreen = unlearnedList.size
 
-                    unlearnedList = unlearnedList.shuffled().take(sizeListToScreen).toMutableList()
-
+                    val listToScreen = unlearnedList.shuffled().take(sizeListToScreen)
+// так как в итоговый список могут попасть уже выученные слова - то их не надо учить снова, их не надо показывать.
+// а надо показывать только слова у которых
+// число правильных ответов меньше заданного, вот в этом цикле они и ищутся.
+// брать только первый - но тогда он и будет первым в списке.
                     var indexWordRightAnswer: Int
                     do {
                         indexWordRightAnswer = (0 until sizeListToScreen).random()
-                        if (unlearnedList[indexWordRightAnswer].correctAnswersCount < NUMBER_CORRECTLY_LEARNED)
+                        if (listToScreen[indexWordRightAnswer].correctAnswersCount < NUMBER_CORRECTLY_LEARNED)
                             break
                     } while (true)
 
-                    println(unlearnedList[indexWordRightAnswer].original)
+                    println(listToScreen[indexWordRightAnswer].original)
                     for (index in 0 until sizeListToScreen - 1) {
-                        print("${index + 1} - ${unlearnedList[index].translated}, ")
+                        print("${index + 1} - ${listToScreen[index].translated}, ")
                     }
-                    println("$sizeListToScreen - ${unlearnedList[sizeListToScreen - 1].translated}")
+                    println("$sizeListToScreen - ${listToScreen[sizeListToScreen - 1].translated}")
 
                     val inputAnswer = getAnswerNumber()
                     if (inputAnswer == 0) break
                     if (indexWordRightAnswer == (inputAnswer - 1)) {
                         println("Правильно!")
-                        dictionary[dictionary.indexOfFirst { it == unlearnedList[indexWordRightAnswer] }].correctAnswersCount++
+                        dictionary[dictionary.indexOfFirst { it == listToScreen[indexWordRightAnswer] }].correctAnswersCount++
                     } else {
-                        println("Неправильно - слово [ ${unlearnedList[indexWordRightAnswer].translated} ]")
+                        println("Неправильно - слово [ ${listToScreen[indexWordRightAnswer].translated} ]")
                     }
                 } while (hasUnlearnedWords(dictionary))
             }
@@ -92,14 +98,5 @@ fun hasUnlearnedWords(dictionary: MutableList<Word>): Boolean {
     }
 }
 
-fun getAnswerNumber(): Int {
-    val input = readln()
-    var inputInt = 99
-    return try {
-        inputInt = input.toInt()
-        inputInt
-    } catch (_: NumberFormatException) {
-        inputInt
-    }
-}
+fun getAnswerNumber(): Int = readln().toIntOrNull() ?: -1
 
