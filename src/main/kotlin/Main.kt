@@ -24,18 +24,22 @@ fun main() {
 // будет меньше чем число вариантов которые надо вывести на экран, то в этот список надо добавить выученные слова  - так написано в задании
 // на YOUTUBE это дальше и проверяется
 // и к списку unlearnedList надо будет добавить новый список из выученных слов - вот поэтому он МУТАБЕЛЬНЫЙ
+// переменная sizeUnlearnedList показывает сколько еще выученных слов надо добавить в список, чтобы он дозаполнился
                     val sizeUnlearnedList = NUMBER_UNLEARNED_WORDS_SCREEN - unlearnedList.size
                     if (sizeUnlearnedList > 0) {
                         val learnedList = dictionary.filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }
+// если размер списка выученных слов такой что недостающая часть по количеству там есть - добавляем только недостающее число слов
                         unlearnedList += if (learnedList.size >= sizeUnlearnedList) {
                             learnedList.take(sizeUnlearnedList)
                         } else {
+// а если этот список выученных слов маленький просто весь что есть
                             learnedList
                         }
                     }
                     if (unlearnedList.size < NUMBER_UNLEARNED_WORDS_SCREEN) sizeListToScreen = unlearnedList.size
-
-                    val listToScreen = unlearnedList.shuffled().take(sizeListToScreen)
+//из полученного списка берем первые слова - там точно будут невыученные слова так как unlearnedList сначало заполнялся невыученными словами и потом мешаем его
+// а то невыученное слово всегда будет первым
+                    val listToScreen = unlearnedList.take(sizeListToScreen).shuffled()
 // так как в итоговый список могут попасть уже выученные слова - то их не надо учить снова, их не надо показывать.
 // а надо показывать только слова у которых
 // число правильных ответов меньше заданного, вот в этом цикле они и ищутся.
