@@ -14,7 +14,7 @@ fun main() {
             0 -> break
             1 -> {
                 println("Для выхода из режима  - 0")
-                do {
+                while (hasUnlearnedWords(dictionary)) {
                     var sizeListToScreen = NUMBER_UNLEARNED_WORDS_SCREEN
                     val unlearnedList =
                         dictionary
@@ -65,7 +65,7 @@ fun main() {
                     } else {
                         println("Неправильно - слово [ ${listToScreen[indexWordRightAnswer].translated} ]")
                     }
-                } while (hasUnlearnedWords(dictionary))
+                }
             }
 
             2 -> {
