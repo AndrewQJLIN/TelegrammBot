@@ -1,5 +1,4 @@
 import java.io.File
-import java.lang.NumberFormatException
 
 fun main() {
     val dictionary: MutableList<Word> = mutableListOf()
@@ -15,51 +14,31 @@ fun main() {
             1 -> {
                 println("Для выхода из режима  - 0")
                 while (hasUnlearnedWords(dictionary)) {
-                    var sizeListToScreen = NUMBER_UNLEARNED_WORDS_SCREEN
-
-                    val unlearnedList =
+                    val unlearnedWords =
                         dictionary
                             .shuffled()
-                            .filter { it.correctAnswersCount < NUMBER_CORRECTLY_LEARNED }.take(sizeListToScreen)
-                            .toMutableList()
-// переменная unlearnedList содержит список невыученных слов, т.е. тех которые удовлетворяют условию и если число таких слов
-// будет меньше чем число вариантов которые надо вывести на экран, то в этот список надо добавить выученные слова  - так написано в задании
-// на YOUTUBE это дальше и проверяется
-// и к списку unlearnedList надо будет добавить новый список из выученных слов - вот поэтому он МУТАБЕЛЬНЫЙ
-// переменная sizeUnlearnedList показывает сколько еще выученных слов надо добавить в список, чтобы он дозаполнился
-                    val sizeUnlearnedList = NUMBER_UNLEARNED_WORDS_SCREEN - unlearnedList.size
-                    if (sizeUnlearnedList > 0) {
-                        unlearnedList += dictionary.filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }
-                            .take(sizeUnlearnedList)
-                    }
-                    sizeListToScreen = unlearnedList.size
-//из полученного списка берем первые слова - там точно будут невыученные слова так как unlearnedList сначало заполнялся невыученными словами и потом мешаем его
-// а то невыученное слово всегда будет первым
-                    val listToScreen = unlearnedList.shuffled()
-// так как в итоговый список могут попасть уже выученные слова - то их не надо учить снова, их не надо показывать.
-// а надо показывать только слова у которых
-// число правильных ответов меньше заданного, вот в этом цикле они и ищутся.
-// брать только первый - но тогда он и будет первым в списке.
-                    var indexWordRightAnswer: Int
-                    do {
-                        indexWordRightAnswer = (0 until sizeListToScreen).random()
-                        if (listToScreen[indexWordRightAnswer].correctAnswersCount < NUMBER_CORRECTLY_LEARNED)
-                            break
-                    } while (true)
+                            .filter { it.correctAnswersCount < NUMBER_CORRECTLY_LEARNED }
+                    val variants = unlearnedWords.take(NUMBER_OF_WORDS_ON_SCREEN).toMutableList()
+                    val correctAnswer = variants.random()
 
-                    println(listToScreen[indexWordRightAnswer].original)
-                    for (index in 0 until sizeListToScreen - 1) {
-                        print("${index + 1} - ${listToScreen[index].translated}, ")
+                    if (variants.size < NUMBER_OF_WORDS_ON_SCREEN) {
+                        variants += dictionary
+                            .filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }
+                            .shuffled()
+                            .take(NUMBER_OF_WORDS_ON_SCREEN - variants.size)
                     }
-                    println("$sizeListToScreen - ${listToScreen[sizeListToScreen - 1].translated}")
 
+                    println(correctAnswer.original)
+                    variants.forEachIndexed { index, word ->
+                        print("${index + 1} - ${word.translated}, ")
+                    }
                     val inputAnswer = getAnswerNumber()
                     if (inputAnswer == 0) break
-                    if (indexWordRightAnswer == (inputAnswer - 1)) {
+                    if (variants.indexOf(correctAnswer) == (inputAnswer - 1)) {
                         println("Правильно!")
-                        dictionary[dictionary.indexOfFirst { it == listToScreen[indexWordRightAnswer] }].correctAnswersCount++
+                        correctAnswer.correctAnswersCount++
                     } else {
-                        println("Неправильно - слово [ ${listToScreen[indexWordRightAnswer].translated} ]")
+                        println("Неправильно - слово [ ${correctAnswer.translated} ]")
                     }
                 }
             }
@@ -87,7 +66,7 @@ data class Word(
 )
 
 const val NUMBER_CORRECTLY_LEARNED = 3
-const val NUMBER_UNLEARNED_WORDS_SCREEN = 4
+const val NUMBER_OF_WORDS_ON_SCREEN = 8
 
 fun hasUnlearnedWords(dictionary: MutableList<Word>): Boolean {
     return if (dictionary.count { it.correctAnswersCount < NUMBER_CORRECTLY_LEARNED } > 0) {
