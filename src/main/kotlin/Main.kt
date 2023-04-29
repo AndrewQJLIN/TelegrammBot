@@ -41,6 +41,7 @@ fun main() {
                     if (variants.indexOf(correctAnswer) == (inputAnswer - 1)) {
                         println("Правильно!")
                         correctAnswer.correctAnswersCount++
+                        saveDictionary(dictionary)
                     } else {
                         println("Неправильно - слово [ ${correctAnswer.translated} ]")
                     }
@@ -56,11 +57,6 @@ fun main() {
             else -> println("Введите только 1,2 или 0")
         }
     } while (true)
-
-    wordsFile.writeText("")
-    dictionary.forEach {
-        wordsFile.appendText("${it.original}|${it.translated}|${it.correctAnswersCount}\n")
-    }
 }
 
 data class Word(
@@ -82,4 +78,12 @@ fun hasUnlearnedWords(dictionary: MutableList<Word>): Boolean {
 }
 
 fun getAnswerNumber(): Int = readln().toIntOrNull() ?: -1
+
+fun saveDictionary(dictionary: MutableList<Word>) {
+    val wordsFile = File("words.txt")
+    wordsFile.writeText("")
+    dictionary.forEach {
+        wordsFile.appendText("${it.original}|${it.translated}|${it.correctAnswersCount}\n")
+    }
+}
 
