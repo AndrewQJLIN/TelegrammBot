@@ -30,8 +30,12 @@ fun main() {
 
                     println(correctAnswer.original)
                     variants.forEachIndexed { index, word ->
-                        print("${index + 1} - ${word.translated}, ")
+                        print("${index + 1} - ${word.translated}")
+                        if (index + 1 < variants.size) {
+                            print(", ")
+                        }
                     }
+                    println()
                     val inputAnswer = getAnswerNumber()
                     if (inputAnswer == 0) break
                     if (variants.indexOf(correctAnswer) == (inputAnswer - 1)) {
@@ -66,7 +70,7 @@ data class Word(
 )
 
 const val NUMBER_CORRECTLY_LEARNED = 3
-const val NUMBER_OF_WORDS_ON_SCREEN = 8
+const val NUMBER_OF_WORDS_ON_SCREEN = 4
 
 fun hasUnlearnedWords(dictionary: MutableList<Word>): Boolean {
     return if (dictionary.count { it.correctAnswersCount < NUMBER_CORRECTLY_LEARNED } > 0) {
