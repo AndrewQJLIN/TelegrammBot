@@ -16,14 +16,11 @@ data class Question(
 class LearnWordsTrainer(private val numberOfWordsOfScreen: Int, private val numberCorrectlyLearned: Int) {
     private var question: Question? = null
     private val dictionary = loadDictionary()
-
-
     fun getStatistics(): Statistics {
         val learnedWords = dictionary.filter { it.correctAnswersCount >= numberCorrectlyLearned }.size
         val totalWords = dictionary.size
         val persent = learnedWords * 100 / totalWords
         return Statistics(learnedWords, totalWords, persent)
-
     }
 
     fun getNextQuestion(): Question? {
@@ -44,14 +41,11 @@ class LearnWordsTrainer(private val numberOfWordsOfScreen: Int, private val numb
             variants
         }
             .shuffled()
-
-
         question = Question(
             variants = finishList,
             correctAnswer = correctAnswer
         )
         return question
-
     }
 
     fun checkAnswer(userAnswerIndex: Int?): Boolean {

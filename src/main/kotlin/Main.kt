@@ -18,7 +18,6 @@ fun main() {
         println("Не возможно загрузить словарь")
         return
     }
-
     do {
         println("Меню: 1 – Учить слова, 2 – Статистика, 0 – Выход")
         when (readln().toIntOrNull()) {
@@ -42,12 +41,10 @@ fun main() {
                     }
                 }
             }
-
             2 -> {
                 val statistics = trainer.getStatistics()
                 println("Выучено ${statistics.learnedWords} из ${statistics.totalWords} | ${statistics.persent}%")
             }
-
             else -> println("Введите только 1,2 или 0")
         }
     } while (true)
