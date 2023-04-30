@@ -11,12 +11,13 @@ fun Question.asConsoleString(): String {
     return this.correctAnswer.original + "\n" + variants + "\n" + "0 - выйти в меню"
 }
 
-const val NUMBER_CORRECTLY_LEARNED = 3
-const val NUMBER_OF_WORDS_ON_SCREEN = 4
-
 fun main() {
-
-    val trainer = LearnWordsTrainer()
+    val trainer = try {
+        LearnWordsTrainer(numberOfWordsOfScreen = 4, numberCorrectlyLearned = 3)
+    } catch (e: Exception) {
+        println("Не возможно загрузить словарь")
+        return
+    }
 
     do {
         println("Меню: 1 – Учить слова, 2 – Статистика, 0 – Выход")
@@ -41,10 +42,12 @@ fun main() {
                     }
                 }
             }
+
             2 -> {
                 val statistics = trainer.getStatistics()
                 println("Выучено ${statistics.learnedWords} из ${statistics.totalWords} | ${statistics.persent}%")
             }
+
             else -> println("Введите только 1,2 или 0")
         }
     } while (true)

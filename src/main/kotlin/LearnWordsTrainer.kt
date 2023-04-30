@@ -1,4 +1,6 @@
 import java.io.File
+import java.lang.IllegalStateException
+import java.lang.IndexOutOfBoundsException
 
 data class Statistics(
     val learnedWords: Int,
@@ -11,13 +13,13 @@ data class Question(
     val correctAnswer: Word
 )
 
-class LearnWordsTrainer {
+class LearnWordsTrainer(private val numberOfWordsOfScreen: Int, private val numberCorrectlyLearned: Int) {
     private var question: Question? = null
     private val dictionary = loadDictionary()
 
 
     fun getStatistics(): Statistics {
-        val learnedWords = dictionary.filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }.size
+        val learnedWords = dictionary.filter { it.correctAnswersCount >= numberCorrectlyLearned }.size
         val totalWords = dictionary.size
         val persent = learnedWords * 100 / totalWords
         return Statistics(learnedWords, totalWords, persent)
@@ -28,19 +30,24 @@ class LearnWordsTrainer {
         val unlearnedWords =
             dictionary
                 .shuffled()
-                .filter { it.correctAnswersCount < NUMBER_CORRECTLY_LEARNED }
+                .filter { it.correctAnswersCount < numberCorrectlyLearned }
         if (unlearnedWords.isEmpty()) return null
-        val variants = unlearnedWords.take(NUMBER_OF_WORDS_ON_SCREEN).toMutableList()
+        val variants = unlearnedWords.take(numberOfWordsOfScreen).toMutableList()
         val correctAnswer = variants.random()
 
-        if (variants.size < NUMBER_OF_WORDS_ON_SCREEN) {
-            variants += dictionary
-                .filter { it.correctAnswersCount >= NUMBER_CORRECTLY_LEARNED }
+        val finishList = if (variants.size < numberOfWordsOfScreen) {
+            variants + dictionary
+                .filter { it.correctAnswersCount >= numberCorrectlyLearned }
                 .shuffled()
-                .take(NUMBER_OF_WORDS_ON_SCREEN - variants.size)
+                .take(numberOfWordsOfScreen - variants.size)
+        } else {
+            variants
         }
+            .shuffled()
+
+
         question = Question(
-            variants = variants,
+            variants = finishList,
             correctAnswer = correctAnswer
         )
         return question
@@ -61,17 +68,21 @@ class LearnWordsTrainer {
     }
 
     private fun loadDictionary(): List<Word> {
-        val dictionary = mutableListOf<Word>()
-        val wordsFile = File("words.txt")
-        wordsFile.forEachLine {
-            val line = it.split("|")
-            dictionary += Word(
-                original = line[0],
-                translated = line[1],
-                correctAnswersCount = line[2].toIntOrNull() ?: 0
-            )
+        try {
+            val dictionary = mutableListOf<Word>()
+            val wordsFile = File("words.txt")
+            wordsFile.forEachLine {
+                val line = it.split("|")
+                dictionary += Word(
+                    original = line[0],
+                    translated = line[1],
+                    correctAnswersCount = line[2].toIntOrNull() ?: 0
+                )
+            }
+            return dictionary
+        } catch (e: IndexOutOfBoundsException) {
+            throw IllegalStateException("некорректный файл")
         }
-        return dictionary
     }
 
     private fun saveDictionary(dictionary: List<Word>) {
