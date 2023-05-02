@@ -5,16 +5,20 @@ import java.lang.IndexOutOfBoundsException
 data class Statistics(
     val learnedWords: Int,
     val totalWords: Int,
-    val persent: Int,
+    val percent: Int,
 )
 
 data class Question(
     val variants: List<Word>,
     val correctAnswer: Word
 )
-
+data class Word(
+    val original: String,
+    val translated: String,
+    var correctAnswersCount: Int = 0,
+)
 class LearnWordsTrainer(private val numberOfWordsOfScreen: Int, private val numberCorrectlyLearned: Int) {
-    private var question: Question? = null
+    var question: Question? = null
     private val dictionary = loadDictionary()
     fun getStatistics(): Statistics {
         val learnedWords = dictionary.filter { it.correctAnswersCount >= numberCorrectlyLearned }.size
