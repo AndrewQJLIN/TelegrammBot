@@ -46,22 +46,22 @@ fun main(args: Array<String>) {
             myBot.checkNextQuestionAndSend(trainerBot, chatId)
         }
 
-        if (data != null) {
-            if (data.startsWith(CALLBACK_DATA_ANSWER_PREFIX)) {
-                val inputAnswer = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
-                if (trainerBot.checkAnswer(inputAnswer)) {
-                    myBot.sendMessageToBot(chatId, "Правильно!")
-                } else {
-                    myBot.sendMessageToBot(
-                        chatId, "Неправильно! ${trainerBot.question?.correctAnswer?.original} " +
-                                "- это [ ${trainerBot.question?.correctAnswer?.translated} ]"
-                    )
-                }
-                myBot.checkNextQuestionAndSend(trainerBot, chatId)
+
+        if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
+            val inputAnswer = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
+            if (trainerBot.checkAnswer(inputAnswer)) {
+                myBot.sendMessageToBot(chatId, "Правильно!")
+            } else {
+                myBot.sendMessageToBot(
+                    chatId, "Неправильно! ${trainerBot.question?.correctAnswer?.original} " +
+                            "- это [ ${trainerBot.question?.correctAnswer?.translated} ]"
+                )
             }
+            myBot.checkNextQuestionAndSend(trainerBot, chatId)
         }
     }
 }
+
 
 class TelegramBotService(private val botToken: String) {
     companion object {
