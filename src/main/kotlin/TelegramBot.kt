@@ -142,19 +142,15 @@ class TelegramBotService(private val botToken: String) {
     private fun sendQuestion(json: Json, chatId: Long, question: Question): String {
         val urlSendMessage = "$PREFIX_URL$botToken/sendMessage"
 
+        val answerButtons: List<List<InlineKeyboard>> =
+            question.variants.mapIndexed { index, word ->
+                listOf(InlineKeyboard(text = word.translated, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"))
+            }
+        val exitButton = listOf(listOf(InlineKeyboard(text = "Выйти в меню", callbackData = EXIT_MENU)))
         val requestBody = SendMessageRequest(
             chatId = chatId,
             text = question.correctAnswer.original,
-            replyMarkup = ReplyMarkup(
-                listOf(
-                    question.variants.mapIndexed { index, word ->
-                        InlineKeyboard(text = word.translated, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index")
-                    },
-                    listOf(
-                        InlineKeyboard(text = "выйти в меню", callbackData = EXIT_MENU),
-                    )
-                )
-            )
+            replyMarkup = ReplyMarkup(answerButtons + exitButton)
         )
         val requestBodyString = json.encodeToString(requestBody)
         val client: HttpClient = HttpClient.newBuilder().build()
