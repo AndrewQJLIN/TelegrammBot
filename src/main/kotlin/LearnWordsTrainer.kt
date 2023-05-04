@@ -13,16 +13,19 @@ data class Question(
     val variants: List<Word>,
     val correctAnswer: Word
 )
+
 @Serializable
 data class Word(
     val original: String,
     val translated: String,
     var correctAnswersCount: Int = 0,
 )
+
 class LearnWordsTrainer(
-    private val fileName:String = "words.txt",
+    private val fileName: String = "words.txt",
     private val numberOfWordsOfScreen: Int,
-    private val numberCorrectlyLearned: Int) {
+    private val numberCorrectlyLearned: Int
+) {
     var question: Question? = null
     private val dictionary = loadDictionary()
     fun getStatistics(): Statistics {
@@ -73,7 +76,7 @@ class LearnWordsTrainer(
     private fun loadDictionary(): List<Word> {
         try {
             val wordsFile = File(fileName)
-            if(!wordsFile.exists()){
+            if (!wordsFile.exists()) {
                 File("words.txt").copyTo(wordsFile)
             }
 
@@ -101,7 +104,7 @@ class LearnWordsTrainer(
     }
 
     fun resetProgress() {
-        dictionary.forEach { it.correctAnswersCount=0 }
+        dictionary.forEach { it.correctAnswersCount = 0 }
         saveDictionary()
     }
 }

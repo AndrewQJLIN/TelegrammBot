@@ -1,5 +1,3 @@
-
-
 fun Question.asConsoleString(): String {
     val variants = this.variants
         .mapIndexed { index, word -> "${index + 1} - ${word.translated}" }
@@ -37,10 +35,12 @@ fun main() {
                     }
                 }
             }
+
             2 -> {
                 val statistics = trainer.getStatistics()
                 println("Выучено ${statistics.learnedWords} из ${statistics.totalWords} | ${statistics.percent}%")
             }
+
             else -> println("Введите только 1,2 или 0")
         }
     } while (true)
